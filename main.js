@@ -1,15 +1,26 @@
-import "babel-polyfill"
+import "babel-polyfill";
 
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { createStore, applyMiddleware } from 'redux'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { createStore, applyMiddleware } from 'redux';
+import createSagaMiddleWare from 'redux-saga';
 
-import Counter from './Counter'
-import reducer from './reducers'
+import Counter from './Counter';
+import reducer from './reducers';
+// import our saga
+import { helloSaga } from './sagas';
 
-const store = createStore(reducer)
+const sagaMiddleWare = createSagaMiddleWare();
 
-const action = type => store.dispatch({type})
+// connect our middleware to the store using applyMiddleWare
+const store = createStore(
+  reducer,
+  applyMiddleware(sagaMiddleWare)
+);
+// start our saga
+sagaMiddleWare.run(helloSaga);
+
+const action = type => store.dispatch({type});
 
 function render() {
   ReactDOM.render(
@@ -18,8 +29,8 @@ function render() {
       onIncrement={() => action('INCREMENT')}
       onDecrement={() => action('DECREMENT')} />,
     document.getElementById('root')
-  )
+  );
 }
 
-render()
-store.subscribe(render)
+render();
+store.subscribe(render);
